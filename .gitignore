@@ -1,0 +1,36 @@
+# Dependencias
+node_modules/
+
+# Build de Vite (bundle web de producción)
+dist/
+dist-electron/
+
+# Artefactos de Electron Builder (ejes, instaladores, app.asar)
+release/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / SO
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporales
+*.tmp
+.cache/
+
+# Hojas originales de arte (fuente de los sprites; no se publican)
+art-src/

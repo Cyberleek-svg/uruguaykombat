@@ -1,0 +1,55 @@
+name: Deploy a GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Permite re-desplegar desde la pestaña Actions sin tocar código
+  workflow_dispatch:
+
+# Permite un solo despliegue a la vez; cancela el anterior si hay uno en curso
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+# Sin esto actions/deploy-pages falla con:
+# "Ensure GITHUB_TOKEN has permission id-token: write"
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Build (Vite)
+        run: npm run build
+
+      - name: Subir artefacto a Pages
+        uses: actions/upload-pages-artifact@v5
+        with:
+          # vite.config.js usa base: './' -> sirve en /uruguay-kombat/ sin problemas
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
