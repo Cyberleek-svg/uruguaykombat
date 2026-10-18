@@ -84,9 +84,10 @@ export const MUSIC = {
 // para amplificarlo (arriba de ~2 empieza a distorsionar).
 export const VOICE_VOLUME = 1.0;
 
-// Efectos de sonido (.mp3 de events). Van por debajo de las voces y por encima
-// de la musica.
-export const SFX_VOLUME = 0.85;
+// Efectos de sonido (.mp3 de events). Tienen que quedar POR DEBAJO de las
+// voces (1.0): si suenan juntos, la voz siempre se tiene que escuchar.
+// Musica de batalla = 0.16 | SFX = 0.45 | voces = 1.0
+export const SFX_VOLUME = 0.45;
 
 export const gameConfig = {
   type: Phaser.AUTO,
