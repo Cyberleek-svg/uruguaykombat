@@ -126,7 +126,9 @@ Formato `.mp3`, en **loop**. Se encarga solo: no hay que tocar código.
 **Recomendaciones:**
 - Que el **final enganche con el principio** (loop sin silencio), si no se nota el corte.
 - ~1 a 3 minutos alcanza, porque se repite.
-- El volumen se ajusta en `MUSIC.volume` de `src/game/config.js` (hoy 0.42).
+- Los volumenes se ajustan en `src/game/config.js`: `MUSIC.volume` (menu, 0.28), `MUSIC.battleVolume`
+  (pelea, 0.16) y `VOICE_VOLUME` (voces, 1.0). La musica baja sola mientras suena una voz
+  (`MUSIC.duckFactor`). Cuando subas `battle_music.mp3` ya entra con el volumen bajo de pelea.
 - En el juego, la tecla **M** apaga/prende todo el sonido.
 - Si los archivos no existen, **el juego corre en silencio** (sin errores, todo jugable).
 
@@ -149,7 +151,7 @@ Formato `.mp3`, en **loop**. Se encarga solo: no hay que tocar código.
 >    que las nubes además *cambien de forma*, no solo que se corran.
 
 ### 7) Voces por personaje (nuevo)
-Formato `.mp3`. Se reproducen **aleatoriamente** (uno de los 5) cada vez que el jugador da un golpe básico. Si un voice ya está sonando, no se interrumpe (no se solapa). La música de fondo nunca se corta.
+Formato `.mp3`. Se reproducen **aleatoriamente** (uno de los 5) cada vez que un luchador (jugador o CPU) da un golpe básico. Si un voice ya está sonando, no se interrumpe (no se solapa). La música de fondo nunca se corta: baja un momento mientras habla el personaje y vuelve sola.
 
 Ruta: `public/assets/audio/voices/<id>_1.mp3` ... `<id>_5.mp3`
 

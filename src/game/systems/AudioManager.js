@@ -1,11 +1,13 @@
 // Musica de fondo, beeps de eventos y control de volumen unico del juego.
-import { MUSIC } from '../config.js';
+import { MUSIC, VOICE_VOLUME } from '../config.js';
 
 export class AudioManager {
   static sharedCtx = null;
   static currentMusic = null;
   static currentKey = null;
   static currentVoice = null;
+  static musicBase = 0;     // volumen "normal" de la pista que suena
+  static ducked = false;    // true mientras suena una voz (la musica baja)
 
   constructor(scene) {
     this.scene = scene;
@@ -33,21 +35,26 @@ export class AudioManager {
     try {
       const sound = this.scene && this.scene.sound;
       if (!sound || !key) return;
-      if (AudioManager.currentKey === key) return; // ya suena esta pista
+      const vol = AudioManager.volumeFor(key, volume);
+      // Ya suena esta pista (o falta el archivo y sigue la anterior): solo se
+      // reajusta el volumen al que corresponde a esta pantalla.
+      if (AudioManager.currentKey === key) { AudioManager.setMusicVolume(vol); return; }
       if (!this.scene.cache.audio.exists(key)) {
-        if (!AudioManager._avisado) {
-          AudioManager._avisado = {};
+        AudioManager._avisado = AudioManager._avisado || {};
+        if (!AudioManager._avisado[key]) {
           AudioManager._avisado[key] = true;
           console.warn(`[AudioManager] Falta la pista "${key}" -> se mantiene la que ya suena (o silencio). Ponela en public/assets/audio/ para que suene.`);
         }
+        // La pelea sin su musica propia usa la del menu, pero con el volumen de batalla.
+        if (AudioManager.currentMusic) AudioManager.setMusicVolume(vol);
         return;
       }
       AudioManager.stopMusic();
-      const vol = typeof volume === 'number' ? volume : (MUSIC.volume || 0.42);
       const music = sound.add(key, { loop: true, volume: vol });
       music.play();
       AudioManager.currentMusic = music;
       AudioManager.currentKey = key;
+      AudioManager.musicBase = vol;
     } catch (e) {
       console.warn('[AudioManager] playMusic omitido:', e.message);
     }
@@ -62,6 +69,38 @@ export class AudioManager {
       try { AudioManager.currentMusic.stop(); AudioManager.currentMusic.destroy(); } catch (e) { /* ignore */ }
       AudioManager.currentMusic = null;
       AudioManager.currentKey = null;
+    }
+    AudioManager.ducked = false;
+  }
+
+  // Volumen que corresponde a cada pista (menu vs. pelea), salvo que se pida otro.
+  static volumeFor(key, volume) {
+    if (typeof volume === 'number') return volume;
+    return key === MUSIC.battle ? MUSIC.battleVolume : MUSIC.volume;
+  }
+
+  static setMusicVolume(base) {
+    AudioManager.musicBase = base;
+    const m = AudioManager.currentMusic;
+    if (!m) return;
+    try { m.volume = AudioManager.ducked ? base * MUSIC.duckFactor : base; } catch (e) { /* ignore */ }
+  }
+
+  // Baja (on=true) o devuelve (on=false) el volumen de la musica de fondo para que
+  // las voces se escuchen por encima. Con transicion suave si la escena sigue viva.
+  static duck(on, scene) {
+    AudioManager.ducked = on;
+    const m = AudioManager.currentMusic;
+    if (!m) return;
+    const target = on ? AudioManager.musicBase * MUSIC.duckFactor : AudioManager.musicBase;
+    try {
+      if (scene && scene.sys && scene.sys.isActive() && scene.tweens) {
+        scene.tweens.add({ targets: m, volume: target, duration: on ? 80 : 350 });
+      } else {
+        m.volume = target;
+      }
+    } catch (e) {
+      try { m.volume = target; } catch (e2) { /* ignore */ }
     }
   }
 
@@ -110,12 +149,23 @@ export class AudioManager {
       }
       if (keys.length === 0) return;
       const key = keys[Math.floor(Math.random() * keys.length)];
-      const v = sound.add(key, { volume: 0.75 });
+      const v = sound.add(key, { volume: VOICE_VOLUME });
       v.play();
       AudioManager.currentVoice = v;
-      const clear = () => { if (AudioManager.currentVoice === v) AudioManager.currentVoice = null; };
-      v.on('complete', clear);
-      v.on('destroy', clear);
+      // La musica baja mientras habla el personaje y vuelve cuando termina.
+      AudioManager.duck(true, this.scene);
+      const scene = this.scene;
+      let restaurada = false;
+      const clear = () => {
+        if (AudioManager.currentVoice === v) AudioManager.currentVoice = null;
+        if (!restaurada) { restaurada = true; AudioManager.duck(false, scene); }
+      };
+      // Al terminar se libera el sonido (si no, se acumulan objetos de audio sin uso).
+      const liberar = () => { clear(); try { v.destroy(); } catch (e) { /* ya destruido */ } };
+      v.once('complete', liberar);
+      v.once('destroy', clear);
+      // Red de seguridad: si 'complete' no llegara, la musica igual se restaura.
+      if (scene.time) scene.time.delayedCall(((v.duration || 3) + 0.5) * 1000, liberar);
     } catch (e) {
       console.warn('[AudioManager] playVoice omitido:', e.message);
     }

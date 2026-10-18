@@ -74,8 +74,15 @@ export const STAGE_TUNE = false;
 export const MUSIC = {
   menu: 'menu_music',
   battle: 'battle_music',
-  volume: 0.42,
+  volume: 0.28,        // musica del menu / seleccion / pantalla VS
+  battleVolume: 0.16,  // musica de la pelea (mas baja: las voces tienen que dominar)
+  duckFactor: 0.35,    // mientras suena una voz, la musica baja a este % de su volumen
 };
+
+// Volumen de las voces de los personajes: tiene que ser MUY superior a la musica.
+// 1 = maximo normal. Si algun .mp3 quedo grabado bajo, se puede subir (ej. 1.5)
+// para amplificarlo (arriba de ~2 empieza a distorsionar).
+export const VOICE_VOLUME = 1.0;
 
 export const gameConfig = {
   type: Phaser.AUTO,

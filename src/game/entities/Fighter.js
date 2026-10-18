@@ -73,7 +73,7 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     switch (state) {
       case 'idle': this.playAnim('idle'); break;
       case 'walk': this.playAnim('walk'); break;
-      case 'attack': this.playAnim('attack'); this.attackLanded = false; this.hitboxSpawned = false; if (this.isPlayer && this.scene.audio) this.scene.audio.playVoice(this.stats.id); break;
+      case 'attack': this.playAnim('attack'); this.attackLanded = false; this.hitboxSpawned = false; if (this.scene.audio) this.scene.audio.playVoice(this.stats.id); break; // voz: jugador Y CPU
       case 'hit': this.playAnim('hit'); this.destroyHitbox(); break;
       case 'special': this.playAnim('special'); this.hitboxSpawned = false; break;
       case 'ko': this.playAnim('hit'); this.destroyHitbox(); break;
