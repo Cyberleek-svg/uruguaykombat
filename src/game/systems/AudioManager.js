@@ -1,5 +1,5 @@
 // Musica de fondo, beeps de eventos y control de volumen unico del juego.
-import { MUSIC, VOICE_VOLUME } from '../config.js';
+import { MUSIC, VOICE_VOLUME, SFX_VOLUME } from '../config.js';
 
 export class AudioManager {
   static sharedCtx = null;
@@ -126,13 +126,31 @@ export class AudioManager {
     osc.stop(now + dur + 0.02);
   }
 
-  hit() { this.beep(220, 0.06, 'sawtooth', 0.15); }
-  attack() { this.beep(660, 0.05, 'square', 0.1); }
-  special_start() {
-    this.beep(330, 0.12, 'triangle', 0.18);
-    if (this.scene && this.scene.time) this.scene.time.delayedCall(120, () => this.beep(550, 0.12, 'triangle', 0.18));
+  // --- Efectos de eventos (.mp3 si existe, beep del codigo si falta) ---
+  // key: identificador en cache ("fx_hit"...). Reproduce una instancia nueva
+  // (los golpes se solapan un poco) y la destruye al terminar.
+  sfx(key, beepFallback) {
+    try {
+      const sound = this.scene && this.scene.sound;
+      if (sound && this.scene.cache.audio.exists(key)) {
+        const s = sound.add(key, { volume: SFX_VOLUME });
+        s.play();
+        s.once('complete', () => { try { s.destroy(); } catch (e) { /* ya destruido */ } });
+        return;
+      }
+    } catch (e) { /* si algo falla, sigue el beep */ }
+    beepFallback();
   }
-  ko() { this.beep(150, 0.4, 'sawtooth', 0.2); }
+
+  hit() { this.sfx('fx_hit', () => this.beep(220, 0.06, 'sawtooth', 0.15)); }
+  attack() { this.sfx('fx_attack', () => this.beep(660, 0.05, 'square', 0.1)); }
+  special_start() {
+    this.sfx('fx_special_start', () => {
+      this.beep(330, 0.12, 'triangle', 0.18);
+      if (this.scene && this.scene.time) this.scene.time.delayedCall(120, () => this.beep(550, 0.12, 'triangle', 0.18));
+    });
+  }
+  ko() { this.sfx('fx_ko', () => this.beep(150, 0.4, 'sawtooth', 0.2)); }
   select() { this.beep(880, 0.05, 'sine', 0.1); }
 
   playVoice(id) {

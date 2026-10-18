@@ -19,6 +19,11 @@ const REAL_ASSETS = {
 const REAL_AUDIO = {
   menu_music: 'assets/audio/menu_music.mp3',
   battle_music: 'assets/audio/battle_music.mp3',
+  // Efectos de eventos (opcionales: si faltan, AudioManager usa beeps del codigo).
+  fx_attack: 'assets/audio/attack.mp3',
+  fx_hit: 'assets/audio/hit.mp3',
+  fx_ko: 'assets/audio/ko.mp3',
+  fx_special_start: 'assets/audio/special_start.mp3',
 };
 
 export class BootScene extends Phaser.Scene {

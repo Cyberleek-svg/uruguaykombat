@@ -84,6 +84,10 @@ export const MUSIC = {
 // para amplificarlo (arriba de ~2 empieza a distorsionar).
 export const VOICE_VOLUME = 1.0;
 
+// Efectos de sonido (.mp3 de events). Van por debajo de las voces y por encima
+// de la musica.
+export const SFX_VOLUME = 0.85;
+
 export const gameConfig = {
   type: Phaser.AUTO,
   width: GAME_WIDTH,
