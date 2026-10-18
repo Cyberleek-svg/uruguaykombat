@@ -5,7 +5,7 @@ Juego de pelea 2D 1v1 hecho con **Phaser 3 + Vite + Electron**.
 
 ## 🎮 Jugar online
 
-_(URL publica: pendiente de definir)_
+**https://cyberleek-svg.github.io/uruguaykombat/**
 
 ## ▶️ Correr en desarrollo
 
