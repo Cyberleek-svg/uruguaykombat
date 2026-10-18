@@ -75,7 +75,7 @@ export const MUSIC = {
   menu: 'menu_music',
   battle: 'battle_music',
   volume: 0.28,        // musica del menu / seleccion / pantalla VS
-  battleVolume: 0.30,  // musica de la pelea
+  battleVolume: 0.45,  // musica de la pelea
   duckFactor: 0.35,    // mientras suena una voz, la musica baja a este % de su volumen
 };
 
@@ -86,8 +86,8 @@ export const VOICE_VOLUME = 1.3;
 
 // Efectos de sonido (.mp3 de events): van bajos, para que no tapen ni la
 // musica ni (sobre todo) las voces.
-// Musica de batalla = 0.30 | SFX = 0.25 | voces = 1.3
-export const SFX_VOLUME = 0.25;
+// Musica de batalla = 0.30 | SFX = 0.20 | voces = 1.3
+export const SFX_VOLUME = 0.20;
 
 // El KO no es un golpe: es un momento de la pelea, queda al nivel de la musica.
 export const KO_VOLUME = 0.30;
