@@ -38,7 +38,7 @@ export const GROUND_TOP = 595;
 // Piso del placeholder procedural (por si faltan los assets reales).
 export const GROUND_TOP_PROCEDURAL = 687;
 
-export const DONATION_LINK = '';
+export const DONATION_LINK = 'https://ko-fi.com/R5X528ZZ7J';
 
 // ---------------------------------------------------------------------------
 // AJUSTE DE LAS CAPAS DEL ESCENARIO (en px de PANTALLA, 1280x720)

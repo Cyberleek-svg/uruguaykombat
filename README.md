@@ -76,5 +76,4 @@ Cada push a `master` compila con Vite y publica en GitHub Pages vía
 
 ## 💰 Donaciones
 
-Constante `DONATION_LINK` en `src/game/scenes/MenuScene.js`.
-Dejala vacía (`""`) y el botón queda deshabilitado.
+Constante `DONATION_LINK` en `src/game/config.js` (apunta a la pagina de Ko-fi).

@@ -39,7 +39,9 @@ export class MenuScene extends Phaser.Scene {
       stroke: '#000', strokeThickness: 3,
     }).setOrigin(0.5);
 
-    const makeBtn = (y, label, color, cb) => {
+    // evento: 'pointerdown' normal; 'pointerup' para abrir links externos (en celular
+    // el navegador solo permite abrir una pestaña nueva al soltar el dedo).
+    const makeBtn = (y, label, color, cb, evento = 'pointerdown') => {
       const bg = this.add.rectangle(width / 2, y, 360, 52, 0x000000, 0.75).setStrokeStyle(3, color);
       const txt = this.add.text(width / 2, y, label, {
         fontSize: '26px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
@@ -47,16 +49,17 @@ export class MenuScene extends Phaser.Scene {
       bg.setInteractive({ useHandCursor: true });
       bg.on('pointerover', () => { bg.setFillStyle(color, 0.35); txt.setColor('#ffeb3b'); });
       bg.on('pointerout', () => { bg.setFillStyle(0x000000, 0.75); txt.setColor('#ffffff'); });
-      bg.on('pointerdown', () => { this.audio.select(); cb(); });
+      bg.on(evento, () => { this.audio.select(); cb(); });
       return { bg, txt };
     };
 
     makeBtn(height * 0.55, '1 JUGADOR  vs  CPU', 0xff2222, () => goToScene(this, 'SelectScene', { mode: 'cpu' }));
 
     makeBtn(height * 0.72, 'APOYAR AL DESARROLLADOR', 0xffeb3b, () => {
-      if (DONATION_LINK) window.open(DONATION_LINK, '_blank');
-      else alert('Gracias por tu apoyo! (Configura DONATION_LINK en src/game/config.js)');
-    });
+      // noopener/noreferrer: la pagina de Ko-fi no recibe la URL del juego.
+      // En la version de escritorio (Electron) se abre en el navegador del sistema.
+      if (DONATION_LINK) window.open(DONATION_LINK, '_blank', 'noopener,noreferrer');
+    }, 'pointerup');
 
     this.add.text(width / 2, height * 0.87, 'P1: A/D mover  W saltar  J ataque  K especial     P2: Flechas  ↑ saltar  L ataque  O especial     ESC: volver', {
       fontSize: '13px', color: '#bdbdbd', fontFamily: 'monospace',
